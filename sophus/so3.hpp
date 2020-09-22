@@ -408,7 +408,12 @@ class SO3Base {
   ///
   SOPHUS_FUNC void setQuaternion(Eigen::Quaternion<Scalar> const& quaternion) {
     unit_quaternion_nonconst() = quaternion;
-    normalize();
+
+    try{
+      normalize();
+    }catch(const std::exception& e){
+      throw std::runtime_error("setQuaternion runtime error");
+    }
   }
 
   /// Accessor of unit quaternion.
@@ -485,7 +490,13 @@ class SO3 : public SO3Base<SO3<Scalar_, Options>> {
     static_assert(
         std::is_same<typename Eigen::QuaternionBase<D>::Scalar, Scalar>::value,
         "Input must be of same scalar type");
-    Base::normalize();
+
+    try{
+      Base::normalize();
+    }catch(const std::exception& e){
+      throw std::runtime_error("SO3 constructor from quaternion runtime error");
+    }
+    
   }
 
   /// Accessor of unit quaternion.

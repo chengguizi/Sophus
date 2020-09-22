@@ -185,7 +185,13 @@ class SE2Base {
   ///
   /// It re-normalizes the SO2 element.
   ///
-  SOPHUS_FUNC void normalize() { so2().normalize(); }
+  SOPHUS_FUNC void normalize() { 
+    try{
+      so2().normalize();
+    }catch(const std::exception& e){
+      throw std::runtime_error("SE2 normalise runtime error");
+    }
+  }
 
   /// Returns 3x3 matrix representation of the instance.
   ///
@@ -559,7 +565,14 @@ class SE2 : public SE2Base<SE2<Scalar_, Options>> {
   ///
   SOPHUS_FUNC static SE2<Scalar> exp(Tangent const& a) {
     Scalar theta = a[2];
-    SO2<Scalar> so2 = SO2<Scalar>::exp(theta);
+    SO2<Scalar> so2;
+    try{
+      so2 = SO2<Scalar>::exp(theta);
+    }catch(const std::exception& e){
+      std::cout << "exp of SE2 failed with theta = " << theta << std::endl;
+      throw std::runtime_error("SE2 exp()");
+    }
+    
     Scalar sin_theta_by_theta;
     Scalar one_minus_cos_theta_by_theta;
     using std::abs;

@@ -7,6 +7,8 @@
 #include <complex>
 #include <type_traits>
 
+#include <stdexcept>
+
 // Include only the selective set of Eigen headers that we need.
 // This helps when using Sophus with unusual compilers, like nvcc.
 #include <Eigen/LU>
@@ -173,8 +175,14 @@ class SO2Base {
     using std::sqrt;
     Scalar length = sqrt(unit_complex().x() * unit_complex().x() +
                          unit_complex().y() * unit_complex().y());
-    SOPHUS_ENSURE(length >= Constants<Scalar>::epsilon(),
+    try{
+      SOPHUS_ENSURE(length >= Constants<Scalar>::epsilon(),
                   "Complex number should not be close to zero!");
+    }catch(const std::exception& e){
+      std::cout << "SOPHUS_ENSURE failed in normalize()" << std::endl;
+      throw std::runtime_error("SO2 normalise()");
+    }
+    
     unit_complex_nonconst().x() /= length;
     unit_complex_nonconst().y() /= length;
   }

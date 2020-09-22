@@ -10,6 +10,8 @@
 #include <random>
 #include <type_traits>
 
+#include <stdexcept>
+
 #include <Eigen/Core>
 
 #if !defined(SOPHUS_DISABLE_ENSURES)
@@ -69,7 +71,9 @@ SOPHUS_FUNC void defaultEnsure(char const* function, char const* file, int line,
 #else
   std::cout << details::FormatString(description, std::forward<Args>(args)...)
             << std::endl;
-  std::abort();
+  // std::abort();
+  // hm: instead of abort, throw exception
+  throw std::runtime_error("Sopus defaultEnsure");
 #endif
 }
 }  // namespace Sophus
