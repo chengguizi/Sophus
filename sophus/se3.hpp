@@ -381,7 +381,12 @@ class SE3Base {
   /// Precondition: The quaternion must not be close to zero.
   ///
   SOPHUS_FUNC void setQuaternion(Eigen::Quaternion<Scalar> const& quat) {
-    so3().setQuaternion(quat);
+    try{
+      so3().setQuaternion(quat);
+    }catch(const std::exception& e){
+      throw std::runtime_error("SE3 setQuaternion runtime error");
+    }
+    
   }
 
   /// Sets ``so3`` using ``rotation_matrix``.
