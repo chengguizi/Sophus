@@ -227,7 +227,16 @@ class SO3Base {
   /// Returns group inverse.
   ///
   SOPHUS_FUNC SO3<Scalar> inverse() const {
-    return SO3<Scalar>(unit_quaternion().conjugate());
+
+    SO3<Scalar> ret;
+    try{
+      ret = SO3<Scalar>(unit_quaternion().conjugate());
+      
+    }catch(const std::exception& e){
+      throw std::runtime_error("SO3 inverse() runtime error");
+    }
+
+    return ret;
   }
 
   /// Logarithmic map
@@ -335,11 +344,20 @@ class SO3Base {
     /// NOTE: We cannot use Eigen's Quaternion multiplication because it always
     /// returns a Quaternion of the same Scalar as this object, so it is not
     /// able to multiple Jets and doubles correctly.
-    return SO3Product<OtherDerived>(QuaternionProductType(
-        a.w() * b.w() - a.x() * b.x() - a.y() * b.y() - a.z() * b.z(),
+
+    SO3Product<OtherDerived> ret;
+    try{
+      QuaternionProductType q(a.w() * b.w() - a.x() * b.x() - a.y() * b.y() - a.z() * b.z(),
         a.w() * b.x() + a.x() * b.w() + a.y() * b.z() - a.z() * b.y(),
         a.w() * b.y() + a.y() * b.w() + a.z() * b.x() - a.x() * b.z(),
-        a.w() * b.z() + a.z() * b.w() + a.x() * b.y() - a.y() * b.x()));
+        a.w() * b.z() + a.z() * b.w() + a.x() * b.y() - a.y() * b.x());
+      q.normalize();
+      ret =  SO3Product<OtherDerived>(q);
+    }catch(const std::exception& e){
+      throw std::runtime_error("SO3 multiplication runtime error");
+    }
+
+    return ret;
   }
 
   /// Group action on 3-points.
